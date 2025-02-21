@@ -4,7 +4,7 @@ import struct
 import time
 from typing import Optional
 
-NODE_ID = 67
+NODE_ID = 31
 
 class VescController:
     def __init__(self, can_channel: str = "can0", bitrate: int = 500000):
@@ -84,18 +84,6 @@ class VescController:
         except can.CanError as e:
             print(f"Failed to send message: {e}")
 
-    def set_pos_elwin(self, controller_id: int, pos: float) -> None:
-        # Pack the scaled current into 4 bytes (big-endian, signed)
-        # data = struct.pack(">f", pos )
-        data = struct.pack("<f", pos )
-
-        # Create a CAN message with extended ID
-        msg = can.Message(
-            arbitration_id=(controller_id | (67 << 8)),  # 
-            is_extended_id=True,
-            data=data,  # No padding necessary for this command
-        )
-
         # Send the CAN message
         try:
             self.bus.send(msg)
@@ -104,7 +92,7 @@ class VescController:
             print(f"Failed to send message: {e}")
             
     def set_kp(self, controller_id: int, kp: float) -> None:
-        data = struct.pack("<f", kp )
+        data = struct.pack(">f", kp )
 
         # Create a CAN message with extended ID
         msg = can.Message(
@@ -121,7 +109,7 @@ class VescController:
             print(f"Failed to send message: {e}")
 
     def set_ki(self, controller_id: int, ki: float) -> None:
-        data = struct.pack("<f", ki )
+        data = struct.pack(">f", ki )
 
         # Create a CAN message with extended ID
         msg = can.Message(
@@ -138,7 +126,7 @@ class VescController:
             print(f"Failed to send message: {e}")
 
     def set_kd(self, controller_id: int, kd: float) -> None:
-        data = struct.pack("<f", kd )
+        data = struct.pack(">f", kd )
 
         # Create a CAN message with extended ID
         msg = can.Message(
@@ -153,6 +141,16 @@ class VescController:
             print(f"Message sent: {msg}")
         except can.CanError as e:
             print(f"Failed to send message: {e}")
+
+    def set_pos_elwin(self, controller_id: int, pos: float) -> None:
+        data = struct.pack(">f", pos )
+
+        # Create a CAN message with extended ID
+        msg = can.Message(
+            arbitration_id=(controller_id | (68 << 8)),  # 
+            is_extended_id=True,
+            data=data,  # No padding necessary for this command
+        )
 
     def close(self):
         """
