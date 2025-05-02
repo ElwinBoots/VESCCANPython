@@ -4,7 +4,7 @@ import struct
 import time
 from typing import Optional
 
-NODE_ID = 31
+NODE_ID = 67
 
 class VescController:
     def __init__(self, can_channel: str = "can0", bitrate: int = 500000):
@@ -74,6 +74,7 @@ class VescController:
         msg = can.Message(
             arbitration_id=(controller_id | (0x04 << 8)),  # Command ID 4 (SET_POS)
             is_extended_id=True,
+            
             data=data,  # No padding necessary for this command
         )
 
@@ -142,6 +143,23 @@ class VescController:
         except can.CanError as e:
             print(f"Failed to send message: {e}")
 
+    def set_pos_floatingpoint(self, controller_id: int, pos: float) -> None:
+        data = struct.pack(">f", pos )
+
+        # Create a CAN message with extended ID
+        msg = can.Message(
+            arbitration_id=(controller_id | (68 << 8)),  # 
+            is_extended_id=True,
+            data=data,  # No padding necessary for this command
+        )
+
+        # Send the CAN message
+        try:
+            self.bus.send(msg)
+            print(f"Message sent: {msg}")
+        except can.CanError as e:
+            print(f"Failed to send message: {e}")
+
     def set_pos_elwin(self, controller_id: int, pos: float) -> None:
         data = struct.pack(">f", pos )
 
@@ -151,6 +169,67 @@ class VescController:
             is_extended_id=True,
             data=data,  # No padding necessary for this command
         )
+
+        # Send the CAN message
+        try:
+            self.bus.send(msg)
+            print(f"Message sent: {msg}")
+        except can.CanError as e:
+            print(f"Failed to send message: {e}")
+
+    def set_velocity(self, controller_id: int, vel: float) -> None:
+        data = struct.pack(">f", vel )
+
+        # Create a CAN message with extended ID
+        msg = can.Message(
+            arbitration_id=(controller_id | (69 << 8)),  # 
+            is_extended_id=True,
+            data=data,  # No padding necessary for this command
+        )
+
+        # Send the CAN message
+        try:
+            self.bus.send(msg)
+            print(f"Message sent: {msg}")
+        except can.CanError as e:
+            print(f"Failed to send message: {e}")
+
+
+    def set_aceleration(self, controller_id: int, acel: float) -> None:
+        data = struct.pack(">f", acel )
+
+        # Create a CAN message with extended ID
+        msg = can.Message(
+            arbitration_id=(controller_id | (70 << 8)),  # 
+            is_extended_id=True,
+            data=data,  # No padding necessary for this command
+        )
+
+        # Send the CAN message
+        try:
+            self.bus.send(msg)
+            print(f"Message sent: {msg}")
+        except can.CanError as e:
+            print(f"Failed to send message: {e}")
+
+
+    def set_deceleration(self, controller_id: int, decel: float) -> None:
+        data = struct.pack(">f", decel )
+
+        # Create a CAN message with extended ID
+        msg = can.Message(
+            arbitration_id=(controller_id | (71 << 8)),  # 
+            is_extended_id=True,
+            data=data,  # No padding necessary for this command
+        )
+
+        # Send the CAN message
+        try:
+            self.bus.send(msg)
+            print(f"Message sent: {msg}")
+        except can.CanError as e:
+            print(f"Failed to send message: {e}")
+
 
     def close(self):
         """
@@ -163,66 +242,20 @@ def main():
     controller = VescController()
 
     try:
-        # controller.set_pos_elwin(NODE_ID, 0)
-        scale = 1
-        # time.sleep(0.5)
-        # controller.set_pos(NODE_ID, 0)
-        # time.sleep(0.5)
-        controller.set_pos_elwin( NODE_ID, 360*1*scale )
+        controller.set_velocity(NODE_ID, 3000)
+        controller.set_aceleration(NODE_ID, 50000)
+        controller.set_deceleration(NODE_ID, 30000)
+      
+        scale = 3
+        controller.set_pos_floatingpoint( NODE_ID, 360*1*scale )
         time.sleep(0.5)
-        controller.set_pos_elwin( NODE_ID, 360*0*scale )
+        controller.set_pos_floatingpoint( NODE_ID, 360*0*scale )
         time.sleep(0.5)
-        controller.set_pos_elwin( NODE_ID, 180*scale )
+        controller.set_pos_floatingpoint( NODE_ID, 180*scale )
         time.sleep(0.5)
-        controller.set_pos_elwin( NODE_ID, 540*scale )
+        controller.set_pos_floatingpoint( NODE_ID, 540*scale )
         time.sleep(0.5)
-        controller.set_pos_elwin( NODE_ID, 0*scale )
-
-        # controller.set_rpm(NODE_ID, 1000)
-        # time.sleep(0.5)
-        # controller.set_rpm(NODE_ID, 1000)
-        # time.sleep(0.5)
-        # controller.set_rpm(NODE_ID, 2000)
-        # time.sleep(0.5)
-        # controller.set_rpm(NODE_ID, 2000)
-        # time.sleep(0.5)
-        # print("Ramping up current...")
-        # for i in range(5):  # Ramp up to 5A
-        #     current = (i + 1)/5
-        #     print(f"Setting current to {current}A")
-        #     controller.send_current(NODE_ID, current)
-        #     time.sleep(0.5)
-
-        # print("Ramping down...")
-        # for i in range(5):  # Ramp down to 0
-        #     current = (5 - i - 1)/5
-        #     print(f"Setting current to {current}A")
-        #     controller.send_current(NODE_ID, current)
-        #     time.sleep(0.5)
-
-
-
-        # scale = 1
-        # controller.set_kp(NODE_ID , 0.05*scale)
-        # controller.set_ki(NODE_ID , 0.0391*scale)
-        # controller.set_kd(NODE_ID , 0.0031*scale)
-        
-        
-        
-        # scale = 1
-        # controller.set_pos_elwin( NODE_ID, 360*1*scale )
-        # time.sleep(0.5)
-        # controller.set_pos_elwin( NODE_ID, 360*0*scale )
-        # time.sleep(0.5)
-        # controller.set_pos_elwin( NODE_ID, 180*scale )
-        # time.sleep(0.5)
-        # controller.set_pos_elwin( NODE_ID, 540*scale )
-        # time.sleep(0.5)
-        # controller.set_pos_elwin( NODE_ID, 0*scale )
-
-        # for i in range(360*10):
-        #   controller.set_pos_elwin( NODE_ID, i )
-        #   time.sleep(0.001)
+        controller.set_pos_floatingpoint( NODE_ID, 0*scale )
 
     except KeyboardInterrupt:
         print("\nStopping motor...")

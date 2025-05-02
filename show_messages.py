@@ -52,12 +52,13 @@ class VescDecoder:
     def decode_status_4(frame: CanFrame) -> dict:
         temp_fet = struct.unpack(">h", frame.data[0:2])[0] / 10
         temp_motor = struct.unpack(">h", frame.data[2:4])[0] / 10
-        current_in = struct.unpack(">h", frame.data[4:6])[0] / 10
-        pid_pos = struct.unpack(">h", frame.data[6:8])[0] / 50
+        # current_in = struct.unpack(">h", frame.data[4:6])[0] / 10
+        # pid_pos = struct.unpack(">h", frame.data[6:8])[0] / 50
+        pid_pos = struct.unpack(">f", frame.data[4:8])[0] 
         return {
             "temp_fet": temp_fet,
             "temp_motor": temp_motor,
-            "current_in": current_in,
+            # "current_in": current_in,
             "pid_pos": pid_pos,
         }
 
