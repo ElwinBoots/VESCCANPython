@@ -143,25 +143,10 @@ class VescController:
         except can.CanError as e:
             print(f"Failed to send message: {e}")
 
-    def set_pos_floatingpoint(self, controller_id: int, pos: float) -> None:
-        data = struct.pack(">f", pos )
-
-        # Create a CAN message with extended ID
-        msg = can.Message(
-            arbitration_id=(controller_id | (68 << 8)),  # 
-            is_extended_id=True,
-            data=data,  # No padding necessary for this command
-        )
-
-        # Send the CAN message
-        try:
-            self.bus.send(msg)
-            print(f"Message sent: {msg}")
-        except can.CanError as e:
-            print(f"Failed to send message: {e}")
-
-    def set_pos_elwin(self, controller_id: int, pos: float) -> None:
-        data = struct.pack(">f", pos )
+    def set_pos_floatingpoint(self, controller_id: int, pos: float , vel: float = 0) -> None:
+        data = struct.pack(">f", pos ) 
+        if vel > 0:
+          data = data + struct.pack(">f", vel )
 
         # Create a CAN message with extended ID
         msg = can.Message(
@@ -242,18 +227,18 @@ def main():
     controller = VescController()
 
     try:
-        controller.set_velocity(NODE_ID, 3000)
-        controller.set_aceleration(NODE_ID, 50000)
-        controller.set_deceleration(NODE_ID, 30000)
+        controller.set_velocity(NODE_ID, 10)
+        controller.set_aceleration(NODE_ID, 10)
+        controller.set_deceleration(NODE_ID, 10)
       
-        scale = 3
-        controller.set_pos_floatingpoint( NODE_ID, 360*1*scale )
+        scale = 1
+        controller.set_pos_floatingpoint( NODE_ID, 1*scale )
         time.sleep(0.5)
-        controller.set_pos_floatingpoint( NODE_ID, 360*0*scale )
+        controller.set_pos_floatingpoint( NODE_ID, 0*scale )
         time.sleep(0.5)
-        controller.set_pos_floatingpoint( NODE_ID, 180*scale )
+        controller.set_pos_floatingpoint( NODE_ID, 0.5*scale )
         time.sleep(0.5)
-        controller.set_pos_floatingpoint( NODE_ID, 540*scale )
+        controller.set_pos_floatingpoint( NODE_ID, 1.5*scale )
         time.sleep(0.5)
         controller.set_pos_floatingpoint( NODE_ID, 0*scale )
 
