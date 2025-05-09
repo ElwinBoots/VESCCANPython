@@ -214,7 +214,25 @@ class VescController:
             print(f"Message sent: {msg}")
         except can.CanError as e:
             print(f"Failed to send message: {e}")
+            
+    def set_curpos(self, controller_id: int, pos: float , store : bool = 0 ) -> None:
+        data = struct.pack(">f", pos )
+        data = data + struct.pack(">b", store )
 
+
+        # Create a CAN message with extended ID
+        msg = can.Message(
+            arbitration_id=(controller_id | (72 << 8)),  # 
+            is_extended_id=True,
+            data=data,  # No padding necessary for this command
+        )
+
+        # Send the CAN message
+        try:
+            self.bus.send(msg)
+            print(f"Message sent: {msg}")
+        except can.CanError as e:
+            print(f"Failed to send message: {e}")
 
     def close(self):
         """
@@ -230,17 +248,18 @@ def main():
         controller.set_velocity(NODE_ID, 10)
         controller.set_aceleration(NODE_ID, 10)
         controller.set_deceleration(NODE_ID, 10)
+        controller.set_curpos(NODE_ID, 22.22342)
       
-        scale = 1
-        controller.set_pos_floatingpoint( NODE_ID, 1*scale )
-        time.sleep(0.5)
-        controller.set_pos_floatingpoint( NODE_ID, 0*scale )
-        time.sleep(0.5)
-        controller.set_pos_floatingpoint( NODE_ID, 0.5*scale )
-        time.sleep(0.5)
-        controller.set_pos_floatingpoint( NODE_ID, 1.5*scale )
-        time.sleep(0.5)
-        controller.set_pos_floatingpoint( NODE_ID, 0*scale )
+        # scale = 1
+        # controller.set_pos_floatingpoint( NODE_ID, 1*scale )
+        # time.sleep(0.5)
+        # controller.set_pos_floatingpoint( NODE_ID, 0*scale )
+        # time.sleep(0.5)
+        # controller.set_pos_floatingpoint( NODE_ID, 0.5*scale )
+        # time.sleep(0.5)
+        # controller.set_pos_floatingpoint( NODE_ID, 1.5*scale )
+        # time.sleep(0.5)
+        # controller.set_pos_floatingpoint( NODE_ID, 0*scale )
 
     except KeyboardInterrupt:
         print("\nStopping motor...")
