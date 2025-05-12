@@ -180,7 +180,7 @@ class VescController:
             print(f"Failed to send message: {e}")
 
 
-    def set_aceleration(self, controller_id: int, acel: float) -> None:
+    def set_acceleration(self, controller_id: int, acel: float) -> None:
         data = struct.pack(">f", acel )
 
         # Create a CAN message with extended ID
@@ -245,21 +245,12 @@ def main():
     controller = VescController()
 
     try:
-        controller.set_velocity(NODE_ID, 10)
-        controller.set_aceleration(NODE_ID, 10)
-        controller.set_deceleration(NODE_ID, 10)
-        controller.set_curpos(NODE_ID, 22.22342)
-      
-        # scale = 1
-        # controller.set_pos_floatingpoint( NODE_ID, 1*scale )
-        # time.sleep(0.5)
-        # controller.set_pos_floatingpoint( NODE_ID, 0*scale )
-        # time.sleep(0.5)
-        # controller.set_pos_floatingpoint( NODE_ID, 0.5*scale )
-        # time.sleep(0.5)
-        # controller.set_pos_floatingpoint( NODE_ID, 1.5*scale )
-        # time.sleep(0.5)
-        # controller.set_pos_floatingpoint( NODE_ID, 0*scale )
+        controller.set_velocity(NODE_ID, 70)
+        controller.set_acceleration(NODE_ID, 200)
+        controller.set_deceleration(NODE_ID, 50)
+        # controller.set_curpos(NODE_ID, 0)
+        controller.set_pos_floatingpoint( NODE_ID, 5 )
+
 
     except KeyboardInterrupt:
         print("\nStopping motor...")
